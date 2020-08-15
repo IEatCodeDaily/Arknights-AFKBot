@@ -1,9 +1,9 @@
-import ctypes
-import time
+import ctypes, time
+# Bunch of stuff so that the script can send keystrokes to game #
 
 SendInput = ctypes.windll.user32.SendInput
 
-# C struct redefinitions 
+# C struct redefinitions
 PUL = ctypes.POINTER(ctypes.c_ulong)
 class KeyBdInput(ctypes.Structure):
     _fields_ = [("wVk", ctypes.c_ushort),
@@ -34,7 +34,6 @@ class Input(ctypes.Structure):
     _fields_ = [("type", ctypes.c_ulong),
                 ("ii", Input_I)]
 
-# Actuals Functions
 
 def PressKey(hexKeyCode):
     extra = ctypes.c_ulong(0)
@@ -50,9 +49,21 @@ def ReleaseKey(hexKeyCode):
     x = Input( ctypes.c_ulong(1), ii_ )
     ctypes.windll.user32.SendInput(1, ctypes.pointer(x), ctypes.sizeof(x))
 
-# directx scan codes http://www.gamespp.com/directx/directInputKeyboardScanCodes.html
-while (True):
-    PressKey(0x10)
-    time.sleep(1)
-    ReleaseKey(0x10)
-    time.sleep(1)
+def MoveMouse(x, y):
+    extra = ctypes.c_ulong(0)
+    ii_ = Input_I()
+    x = int(x*(65536/ctypes.windll.user32.GetSystemMetrics(0))+1)
+    y = int(y*(65536/ctypes.windll.user32.GetSystemMetrics(1))+1)
+    ii_.mi = MouseInput(x, y, 0, 0x0001 | 0x8000, 1, ctypes.pointer(extra))
+    x = Input(ctypes.c_ulong(0), ii_)
+    ctypes.windll.user32.SendInput(1, ctypes.pointer(x), ctypes.sizeof(x))
+
+
+def KeyPress():
+    time.sleep(3)
+    PressKey(0x10) # press Q
+    time.sleep(.05)
+    ReleaseKey(0x10) #release Q
+    
+while(True):
+    KeyPress()
