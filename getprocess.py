@@ -5,7 +5,7 @@ open_windows = [[]]
 
 #print(active, win32gui.GetWindowText(active))
 def getactive():
-    awin32gui.GetForegroundWindow()
+    win32gui.GetForegroundWindow()
 
 def getprocess(hwnd, var):
     if win32gui.IsWindowVisible(hwnd) and win32gui.GetWindowTextLength(hwnd) != 0:
