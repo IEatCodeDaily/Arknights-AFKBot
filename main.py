@@ -1,50 +1,81 @@
 import pyautogui
-import time
+from time import sleep
 import getprocess
+import kbhit
+import pynput.keyboard as keyboard
 
+#Variables declaration
+images = ["Image/Stage_startb2.png","Image/Mission_startb.png","Image/Stage_finish.png"]
+stage_started = False
+mission_started = False
+missioncount = 0
+correct_windows = True
+afkbot = True
 
-def main():
-    images = ["Image/Stage_startb.png","Image/Mission_start.png","Image/Stage_finish.png"]
-    count = 0
+def resetvalue():
+    global stage_started, mission_started, missioncount, afkbot
     stage_started = False
     mission_started = False
-    mission_finished = False
     correct_windows = True
-    while True:
-        
-        while correct_windows == True:
-            print("\rChecking for %s" %images[0])
-            while stage_started == 0:
-                try:
-                    count += 1
-                    if count == 3:
-                        pyautogui.click(1700,300)
-                        count = 0
-                    clickx, clicky = pyautogui.locateCenterOnScreen(images[0])
-                except TypeError:
-                    print("\r%s not found. Retrying..." %images[0])
-                else:
-                    print("Image found. Stage started")
-                    pyautogui.click(clickx, clicky)
-                    stage_started = 1
-                    mission_started = 0
+    afkbot = True
 
-            print("\rChecking for %s" %images[1])
-            while stage_started == 1 and mission_started == 0:
-                try:
-                    clickx, clicky = pyautogui.locateCenterOnScreen(images[1])
-                except TypeError:
-                    print("\r%s not found. Retrying..." %images[1])
-                else:
-                    print("Image found. Mission started")
-                    pyautogui.click(clickx, clicky)
-                    stage_started = 0
-                    mission_finished += 1
-                    mission_started = 1
-            print("Mission finished:", mission_finished)
+def botstop():
+    global afkbot
+    afkbot = False
+
+def on_press(key):
+    if key == keyboard.Key.end:
+        botstop()
+    if key == keyboard.Key.home:
+        resetvalue()
+    sleep(.1)
+
+def initlistener():
+    handler = keyboard.Listener(on_press=on_press)
+    handler.start()
+
+def main():
+    global stage_started, mission_started, missioncount
+    count = 0
+    while correct_windows and afkbot:
+        print("\rChecking for %s" %images[0])
+        while stage_started == 0 and afkbot:
+            try:
+                count += 1
+                if count == 3:
+                    pyautogui.click(1700,300)
+                    count = 0
+                clickx, clicky = pyautogui.locateCenterOnScreen(images[0], confidence = 0.9)
+            except TypeError:
+                #print("\r%s not found. Retrying..." %images[1])
+                print(".")
+            else:
+                print("Image found. Stage started")
+                pyautogui.click(clickx, clicky)
+                stage_started = 1
+                mission_started = 0
+
+        print("\rChecking for %s" %images[1])
+        while stage_started and mission_started == 0 and afkbot:
+            try:
+                clickx, clicky = pyautogui.locateCenterOnScreen(images[1], confidence = 0.9)
+            except TypeError:
+                #print("\r%s not found. Retrying..." %images[1])
+                print(".")
+            else:
+                print("Image found. Mission started")
+                pyautogui.click(clickx, clicky)
+                stage_started = 0
+                missioncount += 1
+                mission_started = 1
+
 
 if __name__ == "__main__":
-    main()
+    initlistener()
+    while True:
+        while afkbot:
+            main()
+            print("Mission finished:", missioncount)
 
 #    for i in images:
 #        try:

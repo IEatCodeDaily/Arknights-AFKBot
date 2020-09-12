@@ -10,7 +10,7 @@ def checkActiveWindow(CorrectWindow):
         return False
 
 def getOpenWindows():
-#Return an array of visible windows PID and Name
+#Return an array of visible windows hwnd and Name
     open_windows = []
     def enum_handler(hwnd, args):
         if win32gui.IsWindowVisible(hwnd) and win32gui.GetWindowTextLength(hwnd) != 0:
