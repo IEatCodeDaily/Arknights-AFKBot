@@ -7,3 +7,4 @@ def randomfloat(min,max):
 def getmousepos():
     pyautogui.displayMousePosition()
 
+getmousepos()
